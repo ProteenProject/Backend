@@ -6,11 +6,10 @@ import { CustomRepository } from './TypeormForCustomRepository/CustomRepository.
 @CustomRepository(Boards)
 export class BoardRepository extends Repository<Boards> {
   async createBoard(CreateBoardDto: CreateBoardDto): Promise<Boards> {
-    const { title, contents, postDate, hits } = CreateBoardDto;
+    const { title, contents, hits } = CreateBoardDto;
     const board = this.create({
       title,
       contents,
-      postDate,
       hits,
     });
 

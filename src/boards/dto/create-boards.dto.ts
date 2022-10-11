@@ -5,8 +5,6 @@ export class CreateBoardDto {
   readonly title: string;
   @IsString()
   readonly contents: string;
-  @IsString()
-  readonly postDate: string;
   @IsNumber()
   readonly hits: number;
 }

@@ -13,24 +13,28 @@ export class BoardsService {
   ) {}
 
   async getAllBoards(): Promise<Boards[]> {
+    // 모든 게시물을 가져오는 함수
     return this.boardRepository.find();
   }
 
   async createBoard(CreateBoardDto: CreateBoardDto): Promise<Boards> {
+    // 게시물을 만드는 함수
     return this.boardRepository.createBoard(CreateBoardDto);
   }
 
   async getBoardById(postId: number): Promise<Boards> {
+    // 게시물을 가져오는 함수
     const found = await this.boardRepository.findOne({ where: { postId } });
 
     if (!found) {
       throw new NotFoundException(`Can't find Board with id ${postId}`);
     }
 
-    return found;
+    return found; // 가져온 게시물의 정보를 반환
   }
 
   async deleteBoard(postId: number): Promise<void> {
+    // 게시물을 삭제하는 함수
     const result = await this.boardRepository.delete(postId);
 
     if (result.affected === 0) {
@@ -41,6 +45,7 @@ export class BoardsService {
   }
 
   async updateBoardStatus(
+    // 게시물의 정보를 업데이트 해주는 함수
     postId: number,
     updateData: UpdateBoardDto,
   ): Promise<Boards> {
@@ -48,9 +53,17 @@ export class BoardsService {
     board.hits = updateData.hits;
     board.title = updateData.title;
     board.contents = updateData.contents;
-    board.postDate = updateData.postDate;
-    await this.boardRepository.save(board);
+    await this.boardRepository.save(board); // 변경된 사항을 DB에 저장
 
-    return board;
+    return board; // 변경된 사항을 반환
+  }
+
+  async updateHits(postId: number): Promise<Boards> {
+    // 게시물의 조회수를 증가하게 해주는 함수
+    const board = await this.getBoardById(postId);
+    board.hits++; // 조회수 증가
+    await this.boardRepository.save(board); // 변경된 사항을 DB에 저장
+
+    return board; // 변경된 사항을 반환
   }
 }
