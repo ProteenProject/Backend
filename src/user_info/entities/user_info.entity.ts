@@ -1,8 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, BeforeInsert, BaseEntity } from 'typeorm';
 import * as argon2 from 'argon2';
 
 @Entity()
-export class User_Info {
+export class User_Info extends BaseEntity {
   @PrimaryGeneratedColumn({
     // user_id(기본 키)
     type: 'integer', // int, integer, varchar, char, date, datetime
