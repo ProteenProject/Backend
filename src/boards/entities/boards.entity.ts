@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  DeleteDateColumn,
+} from 'typeorm';
 
 @Entity()
 export class Boards {
@@ -24,16 +31,19 @@ export class Boards {
   contents!: string;
 
   @Column({
-    // postDate(올린 날짜(YYYY-MM-DD HH:MM:SS 형식으로 데이터를 삽입해야함))
-    type: 'datetime',
-    nullable: false, // not null
-  })
-  postDate!: string;
-
-  @Column({
     // hits(조회수(데이터 0을 삽입해야함))
     type: 'int',
     nullable: false, // not null
   })
   hits!: number;
+
+  @CreateDateColumn({
+    type: 'datetime',
+  })
+  createdAt: Date;
+
+  @UpdateDateColumn({
+    type: 'datetime',
+  })
+  updatedAt: Date;
 }

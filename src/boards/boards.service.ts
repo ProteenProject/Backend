@@ -11,61 +11,59 @@ export class BoardsService {
     @InjectRepository(BoardRepository)
     private boardRepository: BoardRepository,
   ) {}
-  // getAll(): Boards[] {
-  //   return this.board;
-  // }
-  // getOne(postId: string): Boards {
-  //   // eslint-disable-next-line prettier/prettier
-  //   const board = this.board.find((board) => board.postId === postId);
-  //   if (!board) {
-  //     // 에러 출력
-  //     throw new NotFoundException(`Board with ID: ${postId} not found.`);
-  //   }
-  //   return board;
-  // }
-  // getBoardById(id: string): Boards {
-  //   return this.board.find((board) => board.postId === id);
-  // }
-  async createBoard(CreateBoardDto: CreateBoardDto): Promise<Boards> {
-    const { title, contents, postDate, hits } = CreateBoardDto;
-    const board = this.boardRepository.create({
-      title,
-      contents,
-      postDate,
-      hits,
-    });
 
-    await this.boardRepository.save(board);
-    return board;
+  async getAllBoards(): Promise<Boards[]> {
+    // 모든 게시물을 가져오는 함수
+    return this.boardRepository.find();
+  }
+
+  async createBoard(CreateBoardDto: CreateBoardDto): Promise<Boards> {
+    // 게시물을 만드는 함수
+    return this.boardRepository.createBoard(CreateBoardDto);
   }
 
   async getBoardById(postId: number): Promise<Boards> {
+    // 게시물을 가져오는 함수
     const found = await this.boardRepository.findOne({ where: { postId } });
 
     if (!found) {
       throw new NotFoundException(`Can't find Board with id ${postId}`);
     }
 
-    return found;
+    return found; // 가져온 게시물의 정보를 반환
   }
-  // deleteOne(postId: string) {
-  //   this.getOne(postId); // 검사를 진행합니다.
-  //   // eslint-disable-next-line prettier/prettier
-  //   this.board = this.board.filter((board) => board.postId !== postId);
-  //   return true;
-  // }
-  // create(BoardData: CreateBoardDto) {
-  //   this.board.push({
-  //     postId: uuid(),
-  //     ...BoardData,
-  //   });
-  // }
-  // update(postId: string, updateData: UpdateBoardDto) {
-  //   const board = this.getBoardById(postId);
-  //   board.hits = updateData.hits;
-  //   board.title = updateData.title;
-  //   board.contents = updateData.contents;
-  //   board.postDate = updateData.postDate;
-  //   return board;
-  // }
+
+  async deleteBoard(postId: number): Promise<void> {
+    // 게시물을 삭제하는 함수
+    const result = await this.boardRepository.delete(postId);
+
+    if (result.affected === 0) {
+      throw new NotFoundException(`Can't find Board with id ${postId}`);
+    }
+
+    console.log('result', result);
+  }
+
+  async updateBoardStatus(
+    // 게시물의 정보를 업데이트 해주는 함수
+    postId: number,
+    updateData: UpdateBoardDto,
+  ): Promise<Boards> {
+    const board = await this.getBoardById(postId);
+    board.hits = updateData.hits;
+    board.title = updateData.title;
+    board.contents = updateData.contents;
+    await this.boardRepository.save(board); // 변경된 사항을 DB에 저장
+
+    return board; // 변경된 사항을 반환
+  }
+
+  async updateHits(postId: number): Promise<Boards> {
+    // 게시물의 조회수를 증가하게 해주는 함수
+    const board = await this.getBoardById(postId);
+    board.hits++; // 조회수 증가
+    await this.boardRepository.save(board); // 변경된 사항을 DB에 저장
+
+    return board; // 변경된 사항을 반환
+  }
 }

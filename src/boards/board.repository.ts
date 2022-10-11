@@ -1,6 +1,19 @@
 import { Repository } from 'typeorm';
-import { CustomRepository } from './boards.decorator';
+import { CreateBoardDto } from './dto/create-boards.dto';
 import { Boards } from './entities/boards.entity';
+import { CustomRepository } from './TypeormForCustomRepository/CustomRepository.decorator';
 
-// @CustomRepository(Boards) // 에러가 생긴 부분
-export class BoardRepository extends Repository<Boards> {}
+@CustomRepository(Boards)
+export class BoardRepository extends Repository<Boards> {
+  async createBoard(CreateBoardDto: CreateBoardDto): Promise<Boards> {
+    const { title, contents, hits } = CreateBoardDto;
+    const board = this.create({
+      title,
+      contents,
+      hits,
+    });
+
+    await this.save(board);
+    return board;
+  }
+}
